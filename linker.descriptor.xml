@@ -1,0 +1,5 @@
+﻿<linker>
+  <assembly fullname="b2">
+    <type fullname="*" required="true" />
+  </assembly>
+</linker>

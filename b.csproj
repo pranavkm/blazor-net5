@@ -1,0 +1,43 @@
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk.Razor" />
+
+  <PropertyGroup>
+    <TargetFramework>net5</TargetFramework>
+    <RazorLangVersion>3.0</RazorLangVersion>
+    <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
+    <RestoreAdditionalProjectSources>https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet5/nuget/v3/index.json</RestoreAdditionalProjectSources>
+    <OutputType>exe</OutputType>
+    <PublishTrimmed>true</PublishTrimmed>
+    <SelfContained>true</SelfContained>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="3.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="3.2.0" PrivateAssets="all" />
+    <!-- <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Build" Version="3.2.0" PrivateAssets="all" /> -->
+    <PackageReference Include="System.Net.Http.Json" Version="3.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <TrimmerRootDescriptor Include="linker.*.xml" />
+  </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk.Razor" />
+
+  <Target Name="ChangePublishLayout" AfterTargets="ComputeAndCopyFilesToPublishDirectory">
+    <PropertyGroup>
+      <FrameworkDir>$(PublishDir)wwwroot\_framework\</FrameworkDir>
+    </PropertyGroup>
+
+    <MakeDir Directories="$(FrameworkDir)_bin;$(FrameworkDir)wasm" />
+
+    <ItemGroup>
+      <BinFiles Include="$(PublishDir)*.dll;$(PublishDir)*.pdb" />
+    </ItemGroup>
+
+    <Move SourceFiles="$(PublishDir)dotnet.wasm" DestinationFolder="$(FrameworkDir)wasm\" />
+    <Move SourceFiles="$(PublishDir)dotnet.js" DestinationFiles="$(FrameworkDir)wasm\dotnet.3.2.0.js" />
+    <Move SourceFiles="@(BinFiles)" DestinationFolder="$(FrameworkDir)_bin" />
+  </Target>
+
+</Project>
